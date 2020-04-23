@@ -25,43 +25,42 @@ int KaramkarKarp(vector<int> sequence){
     return residue;
 }
 
-void readFile(char* infile, vector<int> & sequence){
+void readFile(char* infile, vector<long> & sequence){
 
     ifstream inFile(infile);
     string line;
     for (int i = 0; i < 100; i++) {
         getline(inFile, line);
-        sequence[i] = stoi(line);
+        sequence[i] = stol(line);
     }
     inFile.close();
 }
 
-void randSequence(vector<int> & sequence){
+void randSequence(vector<long> &sequence){
     random_device rd;
     mt19937 gen(rd());
     uniform_int_distribution<> distribution(1, pow(10, 12));
     for (int i = 0; i < 100; i++){
-        int random = distribution(gen);
-        sequence.push_back(random);
+        long random = distribution(gen);
+        sequence[i] = random;
     }
-    return;
+
 }
 
 int main(int argc, char* argv[]) {
 
     int flag = atoi(argv[1]);
     if (flag == 0){
-        vector<int> sequence(100);
+        vector<long> sequence(100);
         randSequence(sequence);
-        for (int i = 0; i < sequence.size(); i++){
+        for (int i = 0; i < 100; i++){
             cout << sequence[i] << "\n";
         }
-
     }
 
     if (flag == 1){
         char* infile = argv[2];
-        vector<int> sequence(100);
+        vector<long> sequence(100);
         readFile(infile, sequence);
     }
 
