@@ -6,48 +6,48 @@ using namespace std;
 
 class MaxHeap {
     private:
-        vector<int> heap;
-        int p(int i);
-        int r(int i);
-        int l(int i);
+        vector<long long> heap;
+        long long p(long long i);
+        long long r(long long i);
+        long long l(long long i);
 
     public:
-        void shiftDown(int i);
-        void shiftUp(int i);
-        void insert(int key);
-        int get_max();
-        int delete_max();
-        int getSize();
+        void shiftDown(long long i);
+        void shiftUp(long long i);
+        void insert(long long key);
+        long long get_max();
+        long long delete_max();
+        long long getSize();
 };
 
-int MaxHeap::p(int i) {
+long long MaxHeap::p(long long i) {
     return (i - 1) / 2;
 }
 
-int MaxHeap::r(int i) {
+long long MaxHeap::r(long long i) {
     return (2 * i + 2);
 }
 
-int MaxHeap::l(int i) {
+long long MaxHeap::l(long long i) {
     return (2 * i + 1);
 }
 
-int MaxHeap::getSize() {
+long long MaxHeap::getSize() {
     return heap.size();
 }
 
-void MaxHeap::insert(int val) {
+void MaxHeap::insert(long long val) {
     heap.push_back(val);
-    int index = heap.size() - 1;
+    long long index = heap.size() - 1;
     shiftUp(index);
 }
 
-int MaxHeap::get_max() {
+long long MaxHeap::get_max() {
     return heap[0];
 }
 
-int MaxHeap::delete_max() {
-    int max = heap[0];
+long long MaxHeap::delete_max() {
+    long long max = heap[0];
     heap[0] = heap.back();
     heap.pop_back();
     shiftDown(0);
@@ -55,11 +55,11 @@ int MaxHeap::delete_max() {
 
 }
 
-void MaxHeap::shiftDown(int i) {
-    int left = l(i);
-    int right = r(i);
+void MaxHeap::shiftDown(long long i) {
+    long long left = l(i);
+    long long right = r(i);
 
-    int largest = i;
+    long long largest = i;
 
     if (left < heap.size() && heap[left] > heap[i])
         largest = left;
@@ -73,7 +73,7 @@ void MaxHeap::shiftDown(int i) {
     }
 }
 
-void MaxHeap::shiftUp(int i) {
+void MaxHeap::shiftUp(long long i) {
 
     if (i && heap[p(i)] < heap[i]) {
         swap(heap[i], heap[p(i)]);
@@ -89,8 +89,8 @@ void MaxHeap::shiftUp(int i) {
     pq.insert(3);
     pq.insert(2);
     pq.insert(15);
-    pq.insert(21);
-    pq.insert(7);
+    pq.insert(2100000000000);
+    pq.insert(7000000000);
 
 
     cout << "Size is " << pq.getSize() << endl;
