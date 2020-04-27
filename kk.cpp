@@ -5,7 +5,12 @@
 #include <fstream>
 #include <random>
 
+default_random_engine gen;
+uniform_real_distribution<double> distribution(0.0,1.0);
 
+double generateRandomReal() {
+    return distribution(gen);
+}
 
 vector<long long> readFile(char* infile){
     vector<long long> sequence(100);
@@ -41,7 +46,7 @@ vector<long long> randSolutionSequence(){
         if (random == 0){
             sequence[i] = 1;
         }
-        else{
+        else {
             sequence[i] = -1;
         }
     }
@@ -105,6 +110,10 @@ long long KaramkarKarp(vector<long long> sequence){
     return residue;
 }
 
+double coolingSchedule(int iteration) {
+    return pow(10,10) * pow(0.8, iteration/300);
+}
+
 vector<long long> repeatedRandom(vector<long long> sequenceInput){
     vector<long long> tempSequence = randSolutionSequence();
     vector<long long> randSequence(100);
@@ -120,7 +129,7 @@ vector<long long> repeatedRandom(vector<long long> sequenceInput){
             tempSequence = randSequence;
         }
     }
-    cout << finalres << "\n";
+    cout << "Repeated Random: " << finalres << " " << log((double) finalres) << "\n";
     return tempSequence;
 }
 
@@ -139,7 +148,33 @@ vector<long long> hillClimbing(vector<long long> sequenceInput){
             tempSequence = neighborSequence;
         }
     }
-    cout << finalres << "\n";
+    cout << "Hill Climbing: " << finalres << " " << log((double) finalres) << "\n";
+    return tempSequence;
+}
+
+vector<long long> simulatedAnnealing(vector<long long> sequenceInput) {
+    vector<long long> tempSequence = randSolutionSequence();
+    vector<long long> neighborSequence(100);
+    long long res;
+    long long tempres;
+    long long finalres = -1;
+    for(int i = 0; i < 25000; i++){
+        neighborSequence = generateNeighbor(tempSequence);
+        res = residue(neighborSequence, sequenceInput);
+        tempres = residue(tempSequence, sequenceInput);
+        double rand = generateRandomReal();
+        if (res < tempres) {
+            tempSequence = neighborSequence;
+            tempres = res;
+        } else if (rand < exp((-res - tempres)/coolingSchedule(i))) {
+            tempSequence = neighborSequence;
+            cout << "successfully annealed: " << exp((-res - tempres)/coolingSchedule(i)) << endl;
+        }
+        if (tempres < finalres || finalres < 0) {
+            finalres = tempres;
+        }
+    }
+    cout << "Simulated Annealing: " << finalres << " " << log((double) finalres) << "\n";
     return tempSequence;
 }
 
@@ -151,12 +186,16 @@ int main(int argc, char* argv[]) {
         input = randInputSequence();
 
         vector<long long> answer = repeatedRandom(input);
-        for (int i = 0; i < 100; i++){
-            cout << answer[i] << "\n";
-        }
+        // for (int i = 0; i < 100; i++){
+        //    cout << answer[i] << "\n";
+        // }
+
+        vector<long long> hillClimbingResult = hillClimbing(input);
+
+        vector<long long> simAnnealingResult = simulatedAnnealing(input);
 
         long long kk = KaramkarKarp(input);
-        cout << kk << "\n";
+        cout << "KK: " << kk << "\n";
     }
 
 
