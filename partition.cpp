@@ -262,19 +262,22 @@ int main(int argc, char* argv[]) {
     int flag = atoi(argv[1]);
     int alg = atoi(argv[2]);
     char* infile = argv[3];
+    vector<long long> input(100);
 
-    if (flag == 0){
-        vector<long long> input(100);
+    if (flag == 0) {
         input = readFile(infile);
-        if (alg == 0) {
-            cout << KaramkarKarp(input);
-        } else if (alg == 1) {
-            cout << repeatedRandom(input);
-        } else if (alg == 2) {
-            cout << hillClimbing(input);
-        } else if (alg == 3) {
-            cout << simulatedAnnealing(input);
-        }
+    } else {
+        input = randInputSequence();
+    }
+
+    if (alg == 0) {
+        cout << KaramkarKarp(input);
+    } else if (alg == 1) {
+        cout << repeatedRandom(input);
+    } else if (alg == 2) {
+        cout << hillClimbing(input);
+    } else if (alg == 3) {
+        cout << simulatedAnnealing(input);
     }
 
     return 0;
