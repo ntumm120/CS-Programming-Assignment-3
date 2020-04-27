@@ -146,6 +146,48 @@ long long residue(vector<long long> solution, vector<long long> sequence){
     return residue;
 }
 
+vector<int> randPartition() {
+    random_device rd;
+    mt19937 gen(rd());
+    uniform_int_distribution<> distribution(0, 99);
+
+    vector<int> partition(100);
+    for (int i = 0; i < 100; i++) {
+        partition[i] = distribution(gen);
+    }
+    return partition;
+}
+
+vector<int> generatePartitionNeighbor(vector<int> partition) {
+    random_device rd;
+    mt19937 gen(rd());
+    uniform_int_distribution<> distribution(0, 99);
+
+    vector<int> neighbor(100);
+    for(int i = 0; i < 100; i++){
+        neighbor[i] = partition[i];
+    }
+
+    int i = distribution(gen);
+    int j = distribution(gen);
+    while (partition[i] == j) {
+        j = distribution(gen);
+    }
+    neighbor[i] = j;
+    return neighbor;
+}
+
+vector<long long> partitionToSequence(vector <long long> sequence, vector<int> partition) {
+    vector <long long> newSequence(100);
+    for (int i = 0; i < 100; i++) {
+        newSequence[i] = 0;
+    }
+    for (int i = 0; i < 100; i++) {
+        newSequence[partition[i]] += sequence[i];
+    }
+    return newSequence;
+}
+
 vector<long long> generateNeighbor(vector<long long> sequence){
     random_device rd;
     mt19937 gen(rd());
@@ -197,7 +239,7 @@ double coolingSchedule(int iteration) {
     return pow(10,10) * pow(0.8, iteration/300);
 }
 
-long long repeatedRandom(vector<long long> sequenceInput){
+long long repeatedRandom(vector<long long> sequenceInput) {
     vector<long long> tempSequence = randSolutionSequence();
     vector<long long> randSequence(100);
     long long res;
@@ -210,6 +252,21 @@ long long repeatedRandom(vector<long long> sequenceInput){
         if (res < tempres) {
             finalres = res;
             tempSequence = randSequence;
+        }
+    }
+    return finalres;
+}
+
+long long ppRepeatedRandom(vector<long long> sequenceInput) {
+    vector<long long> tempPartition(100);
+    long long res;
+    long long finalres = -1;
+    for(int i = 0; i < 25000; i++){
+        vector<long long> prepartitionedSequence = partitionToSequence(sequenceInput, randPartition());
+        res = KaramkarKarp(prepartitionedSequence);
+        if (res < finalres || finalres < 0) {
+            finalres = res;
+            tempPartition = prepartitionedSequence;
         }
     }
     return finalres;
@@ -278,6 +335,8 @@ int main(int argc, char* argv[]) {
         cout << hillClimbing(input);
     } else if (alg == 3) {
         cout << simulatedAnnealing(input);
+    } else if (alg == 11) {
+        cout << ppRepeatedRandom(input);
     }
 
     return 0;
