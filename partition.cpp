@@ -241,15 +241,12 @@ double coolingSchedule(int iteration) {
 
 long long repeatedRandom(vector<long long> sequenceInput) {
     vector<long long> tempSequence = randSolutionSequence();
-    vector<long long> randSequence(100);
     long long res;
-    long long tempres;
-    long long finalres = 0;
+    long long finalres = residue(tempSequence, sequenceInput);
     for(int i = 0; i < 25000; i++){
-        randSequence = randSolutionSequence();
+        vector<long long> randSequence = randSolutionSequence();
         res = residue(randSequence, sequenceInput);
-        tempres = residue(tempSequence, sequenceInput);
-        if (res < tempres) {
+        if (res < finalres) {
             finalres = res;
             tempSequence = randSequence;
         }
@@ -258,15 +255,15 @@ long long repeatedRandom(vector<long long> sequenceInput) {
 }
 
 long long ppRepeatedRandom(vector<long long> sequenceInput) {
-    vector<long long> tempPartition(100);
+    vector<int> tempPartition = randPartition();
     long long res;
-    long long finalres = -1;
+    long long finalres = KaramkarKarp(partitionToSequence(sequenceInput, tempPartition));
     for(int i = 0; i < 25000; i++){
-        vector<long long> prepartitionedSequence = partitionToSequence(sequenceInput, randPartition());
-        res = KaramkarKarp(prepartitionedSequence);
-        if (res < finalres || finalres < 0) {
+        vector<int> randomPartition = randPartition();
+        res = KaramkarKarp(partitionToSequence(sequenceInput, randPartition()));
+        if (res < finalres) {
             finalres = res;
-            tempPartition = prepartitionedSequence;
+            tempPartition = randomPartition;
         }
     }
     return finalres;
@@ -274,15 +271,12 @@ long long ppRepeatedRandom(vector<long long> sequenceInput) {
 
 long long hillClimbing(vector<long long> sequenceInput){
     vector<long long> tempSequence = randSolutionSequence();
-    vector<long long> neighborSequence(100);
     long long res;
-    long long tempres;
-    long long finalres = 0;
+    long long finalres = residue(tempSequence, sequenceInput);
     for(int i = 0; i < 25000; i++){
-        neighborSequence = generateNeighbor(tempSequence);
+        vector<long long> neighborSequence = generateNeighbor(tempSequence);
         res = residue(neighborSequence, sequenceInput);
-        tempres = residue(tempSequence, sequenceInput);
-        if (res < tempres) {
+        if (res < finalres) {
             finalres = res;
             tempSequence = neighborSequence;
         }
@@ -290,24 +284,59 @@ long long hillClimbing(vector<long long> sequenceInput){
     return finalres;
 }
 
+long long ppHillClimbing(vector<long long> sequenceInput) {
+    vector<int> tempPartition = randPartition();
+    long long res;
+    long long finalres = KaramkarKarp(partitionToSequence(sequenceInput, tempPartition));
+    for(int i = 0; i < 25000; i++){
+        vector<int> neighborPartition = generatePartitionNeighbor(tempPartition);
+        res = KaramkarKarp(partitionToSequence(sequenceInput, neighborPartition));
+        if (res < finalres) {
+            finalres = res;
+            tempPartition = neighborPartition;
+        }
+    }
+    return finalres;
+}
+
 long long simulatedAnnealing(vector<long long> sequenceInput) {
     vector<long long> tempSequence = randSolutionSequence();
-    vector<long long> neighborSequence(100);
     long long res;
-    long long tempres;
-    long long finalres = -1;
+    long long tempres = residue(tempSequence, sequenceInput);
+    long long finalres = tempres;
     for(int i = 0; i < 25000; i++){
-        neighborSequence = generateNeighbor(tempSequence);
+        vector<long long> neighborSequence = generateNeighbor(tempSequence);
         res = residue(neighborSequence, sequenceInput);
-        tempres = residue(tempSequence, sequenceInput);
-        double rand = generateRandomReal();
         if (res < tempres) {
             tempSequence = neighborSequence;
             tempres = res;
-        } else if (rand < exp((-res - tempres)/coolingSchedule(i))) {
+        } else if (generateRandomReal() < exp((-res - tempres)/coolingSchedule(i))) {
             tempSequence = neighborSequence;
+            tempres = res;
         }
-        if (tempres < finalres || finalres < 0) {
+        if (tempres < finalres) {
+            finalres = tempres;
+        }
+    }
+    return finalres;
+}
+
+long long ppSimulatedAnnealing(vector<long long> sequenceInput) {
+    vector<int> tempPartition = randPartition();
+    long long res;
+    long long tempres = KaramkarKarp(partitionToSequence(sequenceInput,tempPartition));
+    long long finalres = tempres;
+    for(int i = 0; i < 25000; i++){
+        vector<int> neighborPartition = generatePartitionNeighbor(tempPartition);
+        res = KaramkarKarp(partitionToSequence(sequenceInput, neighborPartition));
+        if (res < tempres) {
+            tempPartition = neighborPartition;
+            tempres = res;
+        } else if (generateRandomReal() < exp((-res - tempres)/coolingSchedule(i))) {
+            tempPartition = neighborPartition;
+            tempres = res;
+        }
+        if (tempres < finalres) {
             finalres = tempres;
         }
     }
@@ -337,6 +366,10 @@ int main(int argc, char* argv[]) {
         cout << simulatedAnnealing(input);
     } else if (alg == 11) {
         cout << ppRepeatedRandom(input);
+    } else if (alg == 12) {
+        cout << ppHillClimbing(input);
+    } else if (alg == 13) {
+        cout << ppSimulatedAnnealing(input);
     }
 
     return 0;
